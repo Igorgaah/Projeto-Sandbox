@@ -1,28 +1,70 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerControllrt : MonoBehaviour
 {
-    public float speed = 5f; // Velocidade de movimento do jogador
+    private InputActionMap playerActionMap;
+    private Vector2 moveInput;
 
-    private void Update()
+    private void Awake()
     {
-        MovePlayer();
+        playerActionMap = new InputActionMap();
+
+        //Configurar as ações e callbacks
+        playerActionMap.AddAction("Move", binding: "<Keyboard>/wasd");
+        playerActionMap.AddAction("Jump", binding: "<Keyboard/space");
+
+        //Vincular os callbacks das ações
+        playerActionMap.AddAction["Move"].performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+        playerActionMap.AddAction["Jump"].performed += ctx => Jump();
+
+         // Adicione ação "Attack" e vincule o callback
+        playerActionMap.AddAction("Attack", binding: "<Keyboard>/f");
+        playerActionMap["Attack"].performed += ctx => Attack();
+
+        // Adicione ação "Interact" e vincule o callback
+        playerActionMap.AddAction("Interact", binding: "<Keyboard>/g");
+        playerActionMap["Interact"].performed += ctx => Interact();
     }
 
-    private void MovePlayer()
+    private void OnEnable()
     {
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
+        playerActionMap.Enable();
+    }
 
-        // Calcula a direção de movimento do jogador
-        Vector3 movement = new Vector3(moveHorizontal, moveVertical, 0f);
+    private void OnDisable()
+    {
+        playerActionMap.Disable();
+    }
 
-        // Normaliza o vetor de movimento para manter a velocidade constante em todas as direções
-        movement = movement.normalized * speed * Time.deltaTime;
+    private void Attack()
+    {
+        Debug.Log("Attacking!");
+        
+    }
 
-        // Move o jogador pela quantidade calculada
-        transform.Translate(movement);
+    private void Interact()
+    {
+        Debug.Log("Interacting!");
+        
+    }
+
+    private void Jump()
+    {
+        Debug.Log("Jump!");
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        Vector3 moveDirection =  new Vector3(moveInput.x, of, moveInput.y);
+        transform.Translate(moveDirection * Time.deltaTime);
     }
 }
